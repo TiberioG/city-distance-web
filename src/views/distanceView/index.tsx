@@ -1,19 +1,16 @@
 import * as React from 'react'
 import {
   useQuery,
-
 } from '@tanstack/react-query'
 import {fetchDistance, getCityByName} from "./api";
 import {Button} from "baseui/button";
-import {Input} from "baseui/input";
-
-const API_URL = import.meta.env.VITE_APP_API_URL;
 import * as S from "./style";
 import {Select, Value} from "baseui/select";
-import {JSX} from "react";
+import {Card, StyledBody} from "baseui/card";
+import {Heading, HeadingLevel} from "baseui/heading";
+
 
 const getAutosuggestion = (city: any) => {
-
   if (!city) return [];
   return [
     // todo use an api like googlemaps that also returns the id of the city
@@ -29,23 +26,27 @@ const DistanceView = () => {
   const [selected2, setSelected2] = React.useState<Value>([]);
 
 
-  const {data: distanceData, refetch: refetchDistance} = useQuery(
+  const {
+    data: distanceData,
+    refetch: refetchDistance,
+    isRefetching: refetchingDistance,
+    isFetching: isFetchingDistance
+  } = useQuery(
     ['distance', selected1, selected2],
     () => fetchDistance(selected1?.[0].id, selected2?.[0].id),
     {enabled: false} // This means the query will not run automatically on mount
   );
 
-  const {data: city1, isLoading: isLoading1} = useQuery(
+  const {data: city1, isFetching: isLoading1} = useQuery(
     ['city', input1],
     () => getCityByName(input1),
   );
 
-  const {data: city2, isLoading: isLoading2} = useQuery(
+  const {data: city2, isFetching: isLoading2} = useQuery(
     ['city', input2],
     () => getCityByName(input2),
   );
 
-  //
   const getDistance = () => {
     refetchDistance();
   };
@@ -54,11 +55,17 @@ const DistanceView = () => {
 
   return (
     <S.Container>
+
+      <HeadingLevel>
+        <Heading>Distance between two cities</Heading>
+      </HeadingLevel>
+
+      <S.Content>
       <Select
         overrides={{
           ControlContainer: {
             style: {
-              marginBottom: '20px', // Change this to the desired margin value
+              marginBottom: '20px',
             },
           },
         }}
@@ -87,7 +94,7 @@ const DistanceView = () => {
         overrides={{
           ControlContainer: {
             style: {
-              marginBottom: '20px', // Change this to the desired margin value
+              marginBottom: '20px',
             },
           },
         }}
@@ -103,9 +110,23 @@ const DistanceView = () => {
           }
         }}
       />
-      <Button disabled={!readyToFetch} onClick={getDistance}>Get Distance</Button>
-      {distanceData && <p>The distance is {new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(distanceData.distance)} km.</p>}
+      <Button disabled={!readyToFetch} onClick={getDistance} isLoading={isFetchingDistance}>Get Distance</Button>
+      {distanceData &&
 
+        <Card overrides={{
+          Root: {
+            style: {
+              marginTop: '20px',
+            }
+          }
+        }}>
+          <StyledBody>
+            The distance
+            is {new Intl.NumberFormat('en-US', {maximumSignificantDigits: 4}).format(distanceData.distance)} km
+          </StyledBody>
+        </Card>
+      }
+      </S.Content>
     </S.Container>
   );
 }
