@@ -7,8 +7,11 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  plugins: ['react-refresh'],
+  plugins: ['react-refresh', "baseui"],
   rules: {
     'react-refresh/only-export-components': 'warn',
+    'baseui/deprecated-theme-api': "warn",
+    'baseui/deprecated-component-api': "warn",
+    'baseui/no-deep-imports': "warn",
   },
 }
