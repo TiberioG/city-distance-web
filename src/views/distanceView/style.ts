@@ -1,9 +1,8 @@
-import {styled} from "baseui";
+import {styled, withStyle} from "baseui";
+import {Select} from "baseui/select";
 
 export const  Container = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
   height: '100vh',
+  width: '30%',
 });
+
