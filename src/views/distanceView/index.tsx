@@ -37,11 +37,13 @@ const DistanceView = () => {
     {enabled: false} // This means the query will not run automatically on mount
   );
 
+  //todo: use a debounce function to avoid too many requests
   const {data: city1, isFetching: isLoading1} = useQuery(
     ['city', input1],
     () => getCityByName(input1),
   );
 
+  //todo: use a debounce function to avoid too many requests
   const {data: city2, isFetching: isLoading2} = useQuery(
     ['city', input2],
     () => getCityByName(input2),
