@@ -8,6 +8,7 @@ import * as S from "./style";
 import {Select, Value} from "baseui/select";
 import {Card, StyledBody} from "baseui/card";
 import {Heading, HeadingLevel} from "baseui/heading";
+import {useDebounce} from "use-debounce";
 
 
 const getAutosuggestion = (city: any) => {
@@ -25,7 +26,8 @@ const DistanceView = () => {
   const [selected1, setSelected1] = React.useState<Value>([]);
   const [selected2, setSelected2] = React.useState<Value>([]);
 
-
+  const [debouncedInput1] = useDebounce(input1, 500);
+  const [debouncedInput2] = useDebounce(input2, 500);
   const {
     data: distanceData,
     refetch: refetchDistance,
@@ -37,16 +39,14 @@ const DistanceView = () => {
     {enabled: false} // This means the query will not run automatically on mount
   );
 
-  //todo: use a debounce function to avoid too many requests
   const {data: city1, isFetching: isLoading1} = useQuery(
-    ['city', input1],
-    () => getCityByName(input1),
+    ['city', debouncedInput1],
+    () => getCityByName(debouncedInput1),
   );
 
-  //todo: use a debounce function to avoid too many requests
   const {data: city2, isFetching: isLoading2} = useQuery(
-    ['city', input2],
-    () => getCityByName(input2),
+    ['city', debouncedInput2],
+    () => getCityByName(debouncedInput2),
   );
 
   const getDistance = () => {
