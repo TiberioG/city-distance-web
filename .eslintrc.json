@@ -1,0 +1,30 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "react",
+    "@typescript-eslint"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    // Allows for the parsing of modern ECMAScript features
+    "sourceType": "module",
+    // Allows for the use of imports
+    "ecmaFeatures": {
+      "jsx": true,
+      // Allows for the parsing of JSX
+      "arrowFunctions": true
+    }
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": "warn"
+  }
+}
