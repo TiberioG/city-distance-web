@@ -8,16 +8,37 @@ import * as S from "./style";
 import {Select, Value} from "baseui/select";
 import {Card, StyledBody} from "baseui/card";
 import {Heading, HeadingLevel} from "baseui/heading";
+import {useDebounce} from "use-debounce";
 
 
-const getAutosuggestion = (city: any) => {
-  if (!city) return [];
-  return [
-    // todo use an api like googlemaps that also returns the id of the city
-    // here assuming that the name is unique
-    {id: city.name, label: city.name},
-  ]
+const getAutosuggestion = (cities: any) => {
+  if (!cities) return [];
+  return cities.map((city: any) => ({
+    // todo use a better api that returns also an id
+    // right now we use the name as id, assuming it is unique
+    id: city.name,
+    label: formatCity(city),
+  }));
 }
+
+const getMessages = (input: string, fetching: boolean) => {
+  if (!input) return 'Type a city name.'
+  if (fetching) return 'Loading...'
+  return 'Nothing found'
+}
+
+const getFlagEmoji =(countryCode : string) =>{
+  return countryCode.toUpperCase().replace(/./g, char =>
+    // @ts-ignore
+    String.fromCodePoint(127397 + char.charCodeAt())
+  );
+}
+const formatCity = (city: any) => {
+  if (!city) return '';
+  return  `${city.name} ${getFlagEmoji(city.country)}`
+
+}
+
 
 const DistanceView = () => {
   const [input1, setInput1] = React.useState('');
@@ -25,7 +46,8 @@ const DistanceView = () => {
   const [selected1, setSelected1] = React.useState<Value>([]);
   const [selected2, setSelected2] = React.useState<Value>([]);
 
-
+  const [debouncedInput1] = useDebounce(input1, 500);
+  const [debouncedInput2] = useDebounce(input2, 500);
   const {
     data: distanceData,
     refetch: refetchDistance,
@@ -37,14 +59,15 @@ const DistanceView = () => {
     {enabled: false} // This means the query will not run automatically on mount
   );
 
-  const {data: city1, isFetching: isLoading1} = useQuery(
-    ['city', input1],
-    () => getCityByName(input1),
+
+  const {data: city1, isFetching: isFetching1} = useQuery(
+    ['city', debouncedInput1],
+    () => getCityByName(debouncedInput1),
   );
 
-  const {data: city2, isFetching: isLoading2} = useQuery(
-    ['city', input2],
-    () => getCityByName(input2),
+  const {data: city2, isFetching: isFetching2} = useQuery(
+    ['city', debouncedInput2],
+    () => getCityByName(debouncedInput2),
   );
 
   const getDistance = () => {
@@ -53,9 +76,9 @@ const DistanceView = () => {
 
   const readyToFetch = selected1 && selected2 && selected1.length === 1 && selected2.length === 1;
 
+
   return (
     <S.Container>
-
       <HeadingLevel>
         <Heading>Distance between two cities</Heading>
       </HeadingLevel>
@@ -69,12 +92,10 @@ const DistanceView = () => {
             },
           },
         }}
-
-        noResultsMsg={input1 ? 'A city with this name does not exist.' : 'Type a city name.'}
+        noResultsMsg={getMessages(input1, isFetching1)}
         options={
           getAutosuggestion(city1)
         }
-        isLoading={isLoading1}
         value={selected1}
         onSelectResetsInput
         onInputChange={event => setInput1(event.currentTarget.value)}
@@ -87,7 +108,7 @@ const DistanceView = () => {
         }}
       />
       <Select
-        noResultsMsg={input2 ? 'A city with this name does not exist.' : 'Type a city name.'}
+        noResultsMsg={getMessages(input2, isFetching2)}
         options={
           getAutosuggestion(city2)
         }
@@ -98,7 +119,6 @@ const DistanceView = () => {
             },
           },
         }}
-        isLoading={isLoading2}
         value={selected2}
         onSelectResetsInput
         onInputChange={event => setInput2(event.currentTarget.value)}
