@@ -28,7 +28,8 @@ vite dev --mode remote
 ```
 
 ## Deploying the Application
-This repo uses AWS Amplify to deploy the application. On every push to the master branch, the application is automatically deployed to the following URL:
+~~This repo uses AWS Amplify to deploy the application. On every push to the master branch, the application is automatically deployed to the following URL:
 
-https://master.disqokagsd5iq.amplifyapp.com/
+https://master.disqokagsd5iq.amplifyapp.com/~~
 
+The deployment is currently disabled to avoid unnecessary costs, you can deploy the application to your own AWS account.
